@@ -2,11 +2,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <vector>
-#include <stdexcept>
-
-#define DISABLE_COPYING(classname) \
-   classname(const classname&) = delete; \
-   classname& operator=(const classname&) = delete;
 
 namespace cppython {
    class Application {
@@ -83,6 +78,6 @@ namespace cppython {
    private:
       using Object::Object;
    };
-
-   #include "cppython-inl.hpp"
 } // namespace cppython
+
+#include "cppython-inl.hpp"

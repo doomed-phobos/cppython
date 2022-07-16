@@ -3,6 +3,14 @@
 #include <utility>
 
 namespace cppython {
+   namespace types {
+      Object Tuple::pyObj() const {return m_obj;}
+
+      Dict::Dict() :
+         m_obj(PyDict_New()) {}
+      Object Dict::pyObj() const {return m_obj;}
+   } // namespace types
+
    Application::Application() {
       Py_Initialize();
       if(!Py_IsInitialized())
@@ -33,7 +41,10 @@ namespace cppython {
    bool Object::isValid() const {return m_pyObj;}
    unsigned Object::refCnt() const {return m_pyObj ? Py_REFCNT(m_pyObj) : 0;}
    Object Object::callObject() {
-      return PyObject_CallObject((PyObject*)*this, nullptr);
+      return PyObject_CallObject(*this, nullptr);
+   }
+   Object Object::callObject(const types::Tuple& args) {
+      return PyObject_CallObject(*this, args.pyObj());
    }
 
    Object& Object::operator=(const Object& o) {
@@ -61,14 +72,14 @@ namespace cppython {
    }
 
    Object Import::getAttr(const char* name) {
-      return PyObject_GetAttrString((PyObject*)*this, name);
+      return PyObject_GetAttrString(*this, name);
    }
    bool Import::hasAttr(const char* name) const {
-      return PyObject_HasAttrString((PyObject*)*this, name);
+      return PyObject_HasAttrString(*this, name);
    }
 
-   Import Import::Make(const char* name, const types::List<const char*>& fromList) {   
-      PyObject* mod = PyImport_ImportModuleEx(name, nullptr, nullptr, (PyObject*)fromList.toPython());
+   Import Import::Make(const char* name, const types::List<types::String>& fromList) {   
+      PyObject* mod = PyImport_ImportModuleEx(name, nullptr, nullptr, fromList.pyObj());
       if(!mod) {
          // TODO: Invoke error callback?
          return nullptr;

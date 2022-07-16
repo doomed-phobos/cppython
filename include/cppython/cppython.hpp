@@ -2,8 +2,13 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <vector>
+#include <tuple>
 
 namespace cppython {
+   namespace types {
+      class Tuple;
+   } // namespace types
+
    class Application {
    public:
       Application();
@@ -25,18 +30,16 @@ namespace cppython {
       bool isValid() const;
       unsigned refCnt() const;
       Object callObject();
+      Object callObject(const types::Tuple& args);
 
       template<typename... Args>
       Object callMethod(const char* name, Args&&... args);
 
       Object& operator=(const Object& o);
       Object& operator=(Object&& o);
-      explicit operator PyObject*() const {return m_pyObj;}
+      operator PyObject*() const {return m_pyObj;}
       operator bool() const {return isValid();}
    private:
-      template<typename T>
-      static Object callMethod_helper(T&& arg);
-
       PyObject* m_pyObj;
    };
 
@@ -44,29 +47,62 @@ namespace cppython {
       template<typename T>
       class CType {
       public:
-         CType(T&& value);
-         Object toPython() const;
+         explicit CType(const T& value);
+
+         Object pyObj() const;
       private:
-         T&& m_value;
+         T m_value;
       };
 
       template<typename T>
-      class CType<std::vector<T>> {
+      struct is_ctype : std::false_type {};
+      template<typename T>
+      struct is_ctype<CType<T>> : std::true_type {};
+      template<typename T>
+      inline constexpr bool is_ctype_v = is_ctype<T>::value;
+
+      template<typename T,
+         std::enable_if_t<is_ctype_v<T>, int> = 0>
+      class List {
       public:
-         using container_t = std::vector<T>;
+         List(const std::initializer_list<T>& initializer_list) :
+            List(std::vector<T>(initializer_list.begin(), initializer_list.end())) {}
+         List(const std::vector<T>& container) :
+            m_obj(PyList_New(0)) {
+               for(auto& item : container)
+                  PyList_Append(m_obj, item.pyObj());
+            }
 
-         CType(const std::initializer_list<T>& initializer_list);
-         CType(container_t&& value);
-
-         Object toPython() const;
+         Object pyObj() const {return m_obj;}
       private:
-         container_t m_value;
+         Object m_obj;
+      };
+
+      class Tuple {
+      public:
+         template<typename... Args>
+         Tuple(Args&&... args);
+
+         Object pyObj() const;
+      private:
+         Object m_obj;
+      };
+
+      class Dict {
+      public:
+         Dict();
+
+         template<typename T,
+            std::enable_if_t<is_ctype_v<T>, int> = 0>
+         void addItem(const char* key, T&& value);
+
+         Object pyObj() const;
+      private:
+         Object m_obj;
       };
 
       typedef CType<const char*> String;
       typedef CType<bool> Bool;
-      template<typename T>
-      using List = CType<std::vector<T>>;
    } // namespace types
 
    class Import : public Object {
@@ -74,7 +110,7 @@ namespace cppython {
       Object getAttr(const char* name);
       bool hasAttr(const char* name) const;
 
-      static Import Make(const char* name, const types::List<const char*>& fromList);
+      static Import Make(const char* name, const types::List<types::String>& fromList);
    private:
       using Object::Object;
    };

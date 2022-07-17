@@ -13,11 +13,13 @@ namespace cppython {
       Object(const Object& o);
       Object(Object&& o);
       virtual ~Object();
-
+      
       void swap(Object& o);
 
       bool isValid() const;
       unsigned refCnt() const;
+      bool hasAttr(const char* name) const;
+      Object getAttr(const char* name) const;
 
       ///
       /// Cast Object to Derived only if is the same type.
@@ -26,7 +28,7 @@ namespace cppython {
          std::enable_if_t<
             std::is_base_of_v<Object, Derived> && std::is_same_v<decltype(std::declval<Derived>().CheckType), bool(const Object&)>, int> = 0>
       Derived to() {
-         if(!isValid() || !Derived::CheckType(*this))
+         if(!canBe<Derived>())
             return Derived();
          
          Derived d;
@@ -34,6 +36,14 @@ namespace cppython {
          return d;
       }
 
+      template<typename Derived,
+         std::enable_if_t<
+            std::is_base_of_v<Object, Derived> && std::is_same_v<decltype(std::declval<Derived>().CheckType), bool(const Object&)>, int> = 0>
+      bool canBe() {
+         return isValid() && Derived::CheckType(*this);
+      }
+
+      static Object MakeNull();
       ///
       /// Create a Object and unref when calling destructor
       ///

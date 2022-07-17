@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#include <string>
 
 typedef struct _object PyObject;
 
@@ -17,6 +18,8 @@ namespace cppython {
       unsigned refCnt() const;
       bool hasAttr(const char* name) const;
       Object getAttr(const char* name) const;
+      std::string repr() const;
+      std::string str() const;
 
       ///
       /// Cast Object to Derived only if is the same type.

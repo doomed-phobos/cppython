@@ -1,5 +1,7 @@
 #include "cppython/object.hpp"
 
+#include "cppython/ctypes.hpp"
+
 #include <Python.h>
 #include <algorithm>
 
@@ -37,6 +39,12 @@ namespace cppython {
    }
    Object Object::getAttr(const char* name) const {
       return Object::MakeFromRaw(PyObject_GetAttrString(*this, name));
+   }
+   std::string Object::repr() const {
+      return Object::MakeFromRaw(PyObject_Repr(*this)).to<types::String>().value();
+   }
+   std::string Object::str() const {
+      return Object::MakeFromRaw(PyObject_Str(*this)).to<types::String>().value();
    }
 
    Object Object::MakeNull() {

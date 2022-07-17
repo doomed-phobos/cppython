@@ -1,5 +1,5 @@
 #pragma once
-#include <optional>
+#include <type_traits>
 
 typedef struct _object PyObject;
 
@@ -25,9 +25,9 @@ namespace cppython {
       template<typename Derived,
          std::enable_if_t<
             std::is_base_of_v<Object, Derived> && std::is_same_v<decltype(std::declval<Derived>().CheckType), bool(const Object&)>, int> = 0>
-      std::optional<Derived> to() {
+      Derived to() {
          if(!isValid() || !Derived::CheckType(*this))
-            return std::nullopt;
+            return Derived();
          
          Derived d;
          d.swap(*this);

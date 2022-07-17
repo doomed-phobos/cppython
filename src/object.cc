@@ -27,6 +27,7 @@ namespace cppython {
    }
    void Object::swap(Object& o) {
       std::swap(m_pyObj, o.m_pyObj);
+      std::swap(m_unref, o.m_unref);
    }
 
    bool Object::isValid() const {return m_pyObj;}

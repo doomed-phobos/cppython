@@ -6,9 +6,6 @@ typedef struct _object PyObject;
 namespace cppython {
    class Object {
    public:
-      ///
-      /// Make a empty object
-      ///
       Object();
       Object(const Object& o);
       Object(Object&& o);
@@ -42,7 +39,10 @@ namespace cppython {
       bool canBe() {
          return isValid() && Derived::CheckType(*this);
       }
-
+      
+      ///
+      /// Make a empty object
+      ///
       static Object MakeNull();
       ///
       /// Create a Object and unref when calling destructor

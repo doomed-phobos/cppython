@@ -2,13 +2,17 @@
 #include "cppython/object.hpp"
 
 namespace cppython {
-   class Import : public Object {
+   namespace types {
+      class List;
+   }
+
+   class Module : public Object {
    public:
       Object getAttr(const char* name);
       bool hasAttr(const char* name) const;
 
-      static Import Make(const char* name, const types::List<types::String>& fromList);
+      static Module Make(const char* name, const types::List& fromList);
    private:
-      using Object::Object;
+      Module(PyObject* pyObj);
    };
 } // namespace cppython

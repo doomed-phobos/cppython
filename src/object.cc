@@ -25,13 +25,22 @@ namespace cppython {
       m_pyObj = nullptr;
       m_unref = false;
    }
-
    void Object::swap(Object& o) {
       std::swap(m_pyObj, o.m_pyObj);
    }
 
    bool Object::isValid() const {return m_pyObj;}
    unsigned Object::refCnt() const {return m_pyObj ? Py_REFCNT(m_pyObj) : 0;}
+   bool Object::hasAttr(const char* name) const {
+      return PyObject_HasAttrString(*this, name);
+   }
+   Object Object::getAttr(const char* name) const {
+      return Object::MakeFromRaw(PyObject_GetAttrString(*this, name));
+   }
+
+   Object Object::MakeNull() {
+      return Object();
+   }
 
    Object Object::MakeFromRaw(PyObject* pyObj) {
       return Object(pyObj, true);

@@ -27,20 +27,19 @@ public:
          return 1;
       }
 
-      ydl.callMethod("extract_info", Tuple({String("")}));
-
-      /*auto video_info = ydl.callMethod("extract_info", String("https://www.youtube.com/watch?v=-FMcAInEWDc"), Bool(false)).to<Dict>();
+      auto video_info = ydl.callMethod("extract_info",
+         Tuple{String("https://www.youtube.com/watch?v=-FMcAInEWDc"), Bool(false)}).to<Dict>();
       if(!video_info) {
          puts("Error to get video info");
          return 1;
       }
 
-      auto format = video_info->getItem("requested_formats").to<Tuple>()->getItem(0).to<Dict>();
+      auto format = video_info.getItem("requested_formats").to<Tuple>().getItem(0).to<Dict>();
       if(!format) {
          puts("Error to get format");
          return 1;
       }
-      std::cout << format->getItem("url").to<String>()->value() << std::endl;*/
+      std::cout << format.getItem("url").to<String>().value() << std::endl;
 
       return 0;
    }

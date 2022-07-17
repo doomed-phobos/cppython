@@ -1,25 +1,17 @@
 #pragma once
 #include "cppython/object.hpp"
-
 #include "cppython/ctypes.hpp"
+
+#include <optional>
 
 namespace cppython {
    class Instance : public Object {
    public:
-      template<typename... Args>
-      Object callMethod(const char* name, Args&&... args) {
-         return
-            Object::MakeFromRaw(_callMethodPtr(
-               *this,
-               types::String(name),
-               ((PyObject*)args)...,
-               NULL));
-      }
+      Object callMethod(const char* name,
+         const types::Tuple& args,
+         const std::optional<types::Dict>& kwargs = std::nullopt);
    private:
       friend class Callable;
-
-      typedef PyObject* (*wrapper_t)(PyObject*, PyObject*, ...);
-      static wrapper_t _callMethodPtr;
 
       Instance(PyObject*);
    };

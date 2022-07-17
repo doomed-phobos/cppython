@@ -30,8 +30,8 @@ namespace cppython::types {
 
       PyList::type PyList::FromPy(PyObject* pyObj) {
          type t;
-         for(Py_ssize_t i = 0; i < PyList_GET_SIZE(pyObj); ++i)
-            t.push_back(Object::MakeFromBorrow(PyList_GET_ITEM(pyObj, i)));
+         for(Py_ssize_t i = 0; i < PyList_Size(pyObj); ++i)
+            t.push_back(Object::MakeFromBorrow(PyList_GetItem(pyObj, i)));
          
          return t;
       }
@@ -73,8 +73,8 @@ namespace cppython::types {
 
       PyTuple::type PyTuple::FromPy(PyObject* pyObj) {
          type t;
-         for(Py_ssize_t i = 0; i < PyTuple_GET_SIZE(pyObj); ++i)
-            t.push_back(Object::MakeFromBorrow(PyTuple_GET_ITEM(pyObj, i)));
+         for(Py_ssize_t i = 0; i < PyTuple_Size(pyObj); ++i)
+            t.push_back(Object::MakeFromBorrow(PyTuple_GetItem(pyObj, i)));
          
          return t;
       }
@@ -95,10 +95,22 @@ namespace cppython::types {
    List::List(const std::initializer_list<Object>& il) :
       List(type(il.begin(), il.end())) {}
 
-   void Dict::addItem(const std::string& key, Object&& obj) {
-      PyDict_SetItemString(*this, key.c_str(), obj);
+   void Dict::addItem(const char* key, Object&& obj) {
+      PyDict_SetItemString(*this, key, obj);
+   }
+
+   Object Dict::getItem(const char* key) const {
+      return Object::MakeFromBorrow(PyDict_GetItemString(*this, key));
    }
 
    Tuple::Tuple(const std::initializer_list<Object>& il) :
       Tuple(type(il.begin(), il.end())) {}
+
+   int Tuple::size() const {
+      return PyTuple_Size(*this);
+   }
+
+   Object Tuple::getItem(int index) const {
+      return Object::MakeFromBorrow(PyTuple_GetItem(*this, index));
+   }
 } // namespace cppython::types

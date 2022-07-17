@@ -9,5 +9,5 @@ add_library(cppython STATIC
    error.cc
    ctypes.cc)
 target_include_directories(cppython PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(cppython Python::Python)
+target_link_libraries(cppython PRIVATE Python::Python)
 target_compile_definitions(cppython PUBLIC -DPY_SSIZE_T_CLEAN)

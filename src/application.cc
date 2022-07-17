@@ -11,7 +11,7 @@ namespace cppython {
    }
 
    Application::~Application() {
-      if(!Py_FinalizeEx())
+      if(Py_FinalizeEx() < 0)
          perror("WARNING: Py_Finalize isn't zero");
    }
 } // namespace cppython

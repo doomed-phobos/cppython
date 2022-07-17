@@ -1,4 +1,7 @@
 #pragma once
 
-#include "cppython/import.hpp"
+#include "cppython/module.hpp"
+#include "cppython/ctypes.hpp"
 #include "cppython/application.hpp"
+#include "cppython/callable.hpp"
+#include "cppython/instance.hpp"

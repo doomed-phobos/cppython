@@ -78,34 +78,17 @@ namespace cppython::types {
          List(const std::initializer_list<Object>& il);
    CType_END
 
-   CType_BEGIN(Dict)
-      public:
-         Dict();
-         void addItem(const std::string& key, Object&& obj);
-   CType_END
-
    CType_BEGIN(Tuple)
       public:
          Tuple(const std::initializer_list<Object>& il);
-   CType_END
-   
-   /*namespace priv {
-      class Type_base {
-      public:
-         Type_base(PyObject* pyObj);
          
-         const Object& obj() const;
-      private:
-         Object m_obj;
-      };
+         Object getItem(int index) const;
+         int size() const;
+   CType_END
 
-      template<typename... Args>
-      static void pyTuple_helper(const Object& obj) {}
-
-      template<typename Arg0, typename... Args>
-      static void pyTuple_helper(const Object& obj, Arg0&& value, Args&&... args) {
-         pyTuple_helper(obj, std::forward<Args>(args)...);
-         PyTuple_SetItem(obj, sizeof...(Args), value.obj());
-      }
-   } // namespace priv*/
+   CType_BEGIN(Dict)
+      public:
+         void addItem(const char* key, Object&& obj);
+         Object getItem(const char* key) const;
+   CType_END
 } // namespace cppython::types

@@ -6,6 +6,7 @@ add_library(cppython STATIC
    module.cc
    callable.cc
    instance.cc
+   error.cc
    ctypes.cc)
 target_include_directories(cppython PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(cppython Python::Python)

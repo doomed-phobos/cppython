@@ -56,7 +56,7 @@ namespace cppython::types {
          CType(const type& value) :
             Object(T::ToPy(value)) {}
 
-         type value() const {return T::FromPy(*this);}
+         type value() const {return isValid() ? T::FromPy(*this) : type();}
 
          static bool CheckType(const Object& obj) {return T::CheckType(obj);}
       };
